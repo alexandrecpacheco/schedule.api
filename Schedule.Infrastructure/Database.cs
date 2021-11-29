@@ -1,10 +1,12 @@
 ﻿using Dapper;
+using DbUp;
 using Microsoft.Extensions.Configuration;
 using Schedule.Domain.Interfaces.Data;
 using Serilog;
 using System;
 using System.Data.Common;
 using System.Data.SqlClient;
+using System.Reflection;
 using System.Threading;
 using System.Threading.Tasks;
 
@@ -58,6 +60,32 @@ namespace Schedule.Infrastructure
             }
         }
 
+        public void UpgradeIfNecessary()
+        {
+            Log.Information("Upgrading Database");
+            EnsureDatabase.For.SqlDatabase(GetConnectionString());
+            var upgradeDatabase = DeployChanges.To
+                .SqlDatabase(GetConnectionString())
+                .WithScriptsEmbeddedInAssembly(Assembly.GetExecutingAssembly())
+                .LogToAutodetectedLog()
+                .Build();
+
+            var result = upgradeDatabase.PerformUpgrade();
+            if (result.Successful == false)
+            {
+                Console.ForegroundColor = ConsoleColor.Red;
+                Console.WriteLine(result.Error);
+                Console.ResetColor();
+                Log.Error("Failed to upgrade the database - {Error}", result.Error.Message);
+#if DEBUG
+                Console.ReadLine();
+#endif
+            }
+
+            Console.ForegroundColor = ConsoleColor.Green;
+            Console.WriteLine("Success!");
+            Console.ResetColor();
+        }
         private string GetConnectionString()
         {
             return _configuration.GetSection("ConnectionStrings:DefaultConnection").Value;

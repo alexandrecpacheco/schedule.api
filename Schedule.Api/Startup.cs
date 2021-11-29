@@ -59,6 +59,7 @@ namespace Schedule.Api
 
         public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
         {
+            app.ApplicationServices.GetRequiredService<IDatabase>().UpgradeIfNecessary();
             if (env.IsDevelopment())
             {
                 app.UseDeveloperExceptionPage();

@@ -10,5 +10,6 @@ namespace Schedule.Domain.Interfaces.Data
         Task<DbConnection> CreateAndOpenConnection(CancellationToken stoppingToken = default);
         Task ExecuteInTransaction(Func<DbConnection, DbTransaction, Task> action,
             CancellationToken cancellationToken = default);
+        void UpgradeIfNecessary();
     }
 }

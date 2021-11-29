@@ -5,7 +5,16 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <None Remove="Data\Migrations\00001-create-database.sql" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <EmbeddedResource Include="Data\Migrations\00001-create-database.sql" />
+  </ItemGroup>
+
+  <ItemGroup>
     <PackageReference Include="Dapper" Version="2.0.123" />
+    <PackageReference Include="dbup" Version="4.5.0" />
     <PackageReference Include="Microsoft.Extensions.Configuration.Abstractions" Version="6.0.0" />
     <PackageReference Include="Serilog" Version="2.10.0" />
     <PackageReference Include="System.Data.SqlClient" Version="4.8.3" />
