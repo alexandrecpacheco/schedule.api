@@ -10,6 +10,7 @@ using Schedule.Domain.Interfaces.Data.Repository;
 using Schedule.Domain.Interfaces.Data.Service;
 using Schedule.Infrastructure;
 using Schedule.Infrastructure.Data;
+using Serilog;
 using System.Text.Json;
 using System.Text.Json.Serialization;
 
@@ -17,12 +18,19 @@ namespace Schedule.Api
 {
     public class Startup
     {
-        public Startup(IConfiguration configuration)
+        public Startup(IHostEnvironment env)
         {
-            Configuration = configuration;
-        }
+            HostEnvironment = env;
 
-        public IConfiguration Configuration { get; }
+            var builder = new ConfigurationBuilder()
+                .SetBasePath(env.ContentRootPath)
+                .AddJsonFile($"appsettings.{HostEnvironment.EnvironmentName}.json", true);
+
+            if (builder != null) Configuration = builder.Build();
+            Log.Information("ENVIRONMENT: {CurrentEnvironment}", HostEnvironment.EnvironmentName);
+        }
+        public IConfigurationRoot Configuration { get; }
+        private IHostEnvironment HostEnvironment { get; }
 
         public void ConfigureServices(IServiceCollection services)
         {
@@ -33,9 +41,6 @@ namespace Schedule.Api
                 options.JsonSerializerOptions.Converters.Add(new JsonStringEnumConverter());
             });
             services.AddRazorPages();
-            services.AddCustomAuthorization();
-            services.AddCustomAuthentication();
-            services.AddCustomCors();
 
             services.AddSingleton<IDatabase, Database>();
 
@@ -44,6 +49,12 @@ namespace Schedule.Api
 
             var apiSettings = new ApiSettings();
             Configuration.Bind("Schedule", apiSettings);
+            apiSettings.Environment.CurrentEnvironment = HostEnvironment.EnvironmentName;
+
+            services.AddCustomCors();
+            services.AddCustomAuthorization();
+            services.AddSingleton(apiSettings);
+            services.AddCustomAuthentication(apiSettings);
         }
 
         public void Configure(IApplicationBuilder app, IWebHostEnvironment env)

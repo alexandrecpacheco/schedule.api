@@ -1,7 +1,9 @@
 ﻿using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.Extensions.Options;
 using Microsoft.IdentityModel.Tokens;
+using Schedule.Domain;
 using Schedule.Domain.Dto.Response;
 using Schedule.Domain.Entities;
 using Schedule.Domain.Utils;
@@ -29,29 +31,20 @@ namespace Schedule.Api.Controllers
             }
         }
 
-        protected static UserAuthenticatedResponse GenerateToken(User user)
+        protected static UserAuthenticatedResponse GenerateToken(User user, ApiSettings apiSettings)
         {
             var claims = user.UserProfile.Profile.Description;
 
-            //var securityKey = System.Environment.GetEnvironmentVariable("QueueName");
-            //var issuer = System.Environment.GetEnvironmentVariable("QueueName");
-            //var audience = System.Environment.GetEnvironmentVariable("QueueName");
-            //var expireInHour = Convert.ToDouble(System.Environment.GetEnvironmentVariable("QueueName"));
-            var securityKey = "knD2&G|/fae0I1@iP64l{>2+jL7UNF1Tb<|P`|2.q2}Qpsr$M2Bb71FPm45F]G";
-            var issuer = "http://localhost";
-            var audience = "Schedule Api";
-            var expireInHour = 1;
-
             var tokenBuilder = new JwtTokenBuilder()
-                .AddSecurityKey(JwtSecurityKey.Create(securityKey))
+                .AddSecurityKey(JwtSecurityKey.Create(apiSettings.Values.SecurityKey))
                 .AddSubject("Authentication")
-                .AddIssuer(issuer)
-                .AddAudience(audience)
+                .AddIssuer(apiSettings.Values.Issuer)
+                .AddAudience(apiSettings.Values.Audience)
                 .AddClaim("name", user.Name)
                 .AddClaim("id", user.UserId.ToString())
                 .AddClaimRole("role", string.Join(",", claims))
                 .AddAlgorithm(SecurityAlgorithms.HmacSha256)
-                .AddExpiry(expireInHour);
+                .AddExpiry(apiSettings.Values.ExpirationTime);
 
             var token = tokenBuilder.Build();
             var refreshToken = Cryptography.SHA256(Guid.NewGuid().ToString());

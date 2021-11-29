@@ -1,12 +1,12 @@
 using System.Collections.Generic;
 using System.Security.Claims;
-using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
+using Schedule.Domain;
 using System.Text;
-using Microsoft.Extensions.Configuration;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
 
 namespace Schedule
 {
@@ -63,15 +63,8 @@ namespace Schedule
             });
         }
 
-        public static void AddCustomAuthentication(this IServiceCollection services)
+        public static void AddCustomAuthentication(this IServiceCollection services, ApiSettings apiSettings)
         {
-            var securityKey0 = System.Environment.GetEnvironmentVariable("SecurityKey");
-            //var issuer = System.Environment.GetEnvironmentVariable("Issuer");
-            //var audience = System.Environment.GetEnvironmentVariable("Audience");
-            var securityKey = "knD2&G|/fae0I1@iP64l{>2+jL7UNF1Tb<|P`|2.q2}Qpsr$M2Bb71FPm45F]G";
-            var issuer = "http://localhost";
-            var audience = "Schedule Api";
-
             services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
                 .AddJwtBearer(options =>
                 {
@@ -81,9 +74,9 @@ namespace Schedule
                         ValidateAudience = true,
                         ValidateLifetime = true,
                         ValidateIssuerSigningKey = true,
-                        ValidIssuer = issuer,
-                        ValidAudience = audience,
-                        IssuerSigningKey = Create(securityKey)
+                        ValidIssuer = apiSettings.Values.Issuer,
+                        ValidAudience = apiSettings.Values.Audience,
+                        IssuerSigningKey = Create(apiSettings.Values.SecurityKey)
                     };
                     options.IncludeErrorDetails = true;
                 });
@@ -95,6 +88,12 @@ namespace Schedule
             {
                 config.AddPolicy("Admin",
                     policyBuilder => { policyBuilder.RequireClaim(ClaimTypes.Role, "Admin"); });
+
+                config.AddPolicy("Interviewer",
+                    policyBuilder => { policyBuilder.RequireClaim(ClaimTypes.Role, "Interviewer", "Admin"); });
+
+                config.AddPolicy("Candidate",
+                    policyBuilder => { policyBuilder.RequireClaim(ClaimTypes.Role, "Candidate", "Admin"); });
             });
         }
 
@@ -113,5 +112,6 @@ namespace Schedule
         {
             return new SymmetricSecurityKey(Encoding.ASCII.GetBytes(secret));
         }
+
     }
 }

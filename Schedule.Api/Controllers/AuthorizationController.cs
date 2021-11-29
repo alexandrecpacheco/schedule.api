@@ -1,6 +1,7 @@
 ﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using Schedule.Domain;
 using Schedule.Domain.Dto.Request;
 using Schedule.Domain.Interfaces.Data.Service;
 using System.Threading.Tasks;
@@ -11,10 +12,12 @@ namespace Schedule.Api.Controllers
     public class AuthorizationController : BaseController
     {
         private readonly IUserService _userService;
+        private readonly ApiSettings _apiSettings;
 
-        public AuthorizationController(IUserService userService)
+        public AuthorizationController(IUserService userService, ApiSettings apiSettings)
         {
             _userService = userService;
+            _apiSettings = apiSettings;
         }
 
         [AllowAnonymous]
@@ -28,7 +31,7 @@ namespace Schedule.Api.Controllers
 
             var response = await _userService.Authentication(request);
             if (response == null) return await ResponseResult(false);
-            var userAuthenticatedResponse = GenerateToken(response);
+            var userAuthenticatedResponse = GenerateToken(response, _apiSettings);
 
             return await ResponseResult(userAuthenticatedResponse);
         }
