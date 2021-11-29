@@ -34,6 +34,7 @@ namespace Schedule.Api.Controllers
         }
 
         [HttpGet("Test")]
+        [Attributes.Authorize(Role.Admin)]
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
         public string Test()
