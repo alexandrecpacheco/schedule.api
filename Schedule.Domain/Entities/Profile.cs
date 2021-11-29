@@ -2,7 +2,7 @@
 
 namespace Schedule.Domain.Entities
 {
-    public class Profile
+    public class Profile : BaseEntity
     {
         public Profile()
         {
