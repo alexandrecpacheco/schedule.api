@@ -46,6 +46,7 @@ namespace Schedule.Api
 
             services.AddScoped<IUserService, UserService>();
             services.AddScoped<IUserRepository, UserRepository>();
+            services.AddScoped<IUserProfileRepository, UserProfileRepository>();
 
             var apiSettings = new ApiSettings();
             Configuration.Bind("Schedule", apiSettings);

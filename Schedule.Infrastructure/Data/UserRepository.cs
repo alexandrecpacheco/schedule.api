@@ -57,5 +57,29 @@ namespace Schedule.Infrastructure.Data
             return result.FirstOrDefault();
         }
 
+        public async Task<User> GetByEmail(string email)
+        {
+            await using var conn = await _database.CreateAndOpenConnection();
+            const string query = @"
+                    SELECT u.user_id, u.email
+                    FROM [user] u
+                    WHERE u.email = @Email
+            ";
+
+            var parameters = new { email };
+            return await conn.QueryFirstOrDefaultAsync<User>(query, parameters);
+        }
+
+        public async Task<int> Create(User user, DbConnection dbConnection, DbTransaction dbTransaction)
+        {
+            const string query = @"
+                    INSERT INTO [user] (name, email, password, is_active)
+                    VALUES (@Name, @Email, @Password, @IsActive);
+                    
+                    SELECT @@IDENTITY;
+            ";
+
+            return await dbConnection.QuerySingleAsync<int>(query, user, dbTransaction);
+        }
     }
 }
