@@ -33,7 +33,7 @@ namespace Schedule.Infrastructure.Data
         {
             await using var conn = await _database.CreateAndOpenConnection();
 
-            const string query = @"
+            string query = @"
                     SELECT up.user_profile_id, up.user_id,
                            p.profile_id, p.description
                     FROM [user] u
@@ -41,8 +41,10 @@ namespace Schedule.Infrastructure.Data
                         ON u.user_id = up.user_id
                     INNER JOIN profile p 
                         ON up.profile_id = p.profile_id
-                    WHERE email = @Email 
-                    AND name = @Name";
+                    WHERE name = @Name
+                    ";
+
+            query += !string.IsNullOrWhiteSpace(email) ? " AND email = @Email" : string.Empty;
 
             var parameters = new { email, name };
             var userDictionary = new Dictionary<int, UserProfile>();

@@ -1,14 +1,14 @@
-﻿using Schedule.Domain.Entities;
-using Schedule.Domain.Dto.Request;
+﻿using Schedule.Domain.Dto.Request;
+using Schedule.Domain.Dto.Response;
+using Schedule.Domain.Enums;
 using Schedule.Domain.Interfaces.Data;
+using Schedule.Domain.Interfaces.Data.Repository;
 using Schedule.Domain.Interfaces.Data.Service;
 using Serilog;
-using System.Data;
-using System.Threading.Tasks;
-using Schedule.Domain.Interfaces.Data.Repository;
-using Schedule.Domain.Enums;
 using System;
 using System.Collections.Generic;
+using System.Data;
+using System.Threading.Tasks;
 
 namespace Schedule.Service
 {
@@ -77,6 +77,26 @@ namespace Schedule.Service
             }
 
             return await _scheduleRepository.GetScheduleAsync(request.StartAt, request.EndAt, userProfile.UserProfileId);
+        }
+
+        public async Task<IEnumerable<ScheduleResponse>> GetSchedulesAsync(string name, string profile, DateTime startAt, DateTime endAt)
+        {
+            var userProfile = await _userProfileRepository.GetUserProfile(name, string.Empty);
+            if (userProfile == null)
+            {
+                Log.Warning($"The UserProfile {name} does not exists");
+                throw new ArgumentNullException("The informed name does not exists, please inform a valid name");
+            }
+            
+            if (Enum.TryParse(profile, out ProfileEnum profileResult))
+            {
+                if (profileResult == ProfileEnum.Candidate)
+                    return await _scheduleRepository.GetSchedulesAsync(startAt, endAt, ProfileEnum.Interviewer);
+                else
+                    return await _scheduleRepository.GetSchedulesAsync(startAt, endAt, ProfileEnum.Candidate);
+            }
+
+            return new List<ScheduleResponse>();
         }
     }
 }

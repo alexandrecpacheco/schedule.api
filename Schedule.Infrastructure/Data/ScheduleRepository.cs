@@ -1,5 +1,7 @@
 ﻿using Dapper;
+using Schedule.Domain.Dto.Response;
 using Schedule.Domain.Entities;
+using Schedule.Domain.Enums;
 using Schedule.Domain.Interfaces.Data;
 using Schedule.Domain.Interfaces.Data.Repository;
 using System;
@@ -39,10 +41,9 @@ namespace Schedule.Infrastructure.Data
                         u.user_id, u.name, u.email, 
                         up.user_profile_id,
                         p.profile_id, p.[description]
-                    FROM schedule s
-                        INNER JOIN [user] u ON u.user_id = u.user_id
-                        INNER JOIN user_profile up ON s.user_profile_id = up.user_profile_id
-                            AND up.user_id = u.user_id
+                    FROM [user] u 
+                        INNER JOIN user_profile up ON up.user_id = u.user_id
+						INNER JOIN schedule s ON s.user_profile_id = up.user_profile_id
                         INNER JOIN profile p ON p.profile_id = up.profile_id
                     WHERE s.start_at = @StartAt
                         AND s.end_at = @EndAt
@@ -75,6 +76,55 @@ namespace Schedule.Infrastructure.Data
                 }, parameters, splitOn: "user_id, user_profile_id, profile_id");
 
             return result.FirstOrDefault();
+        }
+
+        public async Task<IEnumerable<ScheduleResponse>> GetSchedulesAsync(DateTime startAt, DateTime endAt, ProfileEnum profile)
+        {
+            await using var conn = await _database.CreateAndOpenConnection();
+
+            const string query = @"
+                    SELECT s.start_at, s.end_at,
+                        u.user_id, u.name, u.email, 
+                        p.profile_id, p.[description]
+                    FROM [user] u 
+                        INNER JOIN user_profile up ON up.user_id = u.user_id
+						INNER JOIN schedule s ON s.user_profile_id = up.user_profile_id
+                        INNER JOIN profile p ON p.profile_id = up.profile_id
+                    WHERE p.profile_id = @ProfileId
+                        AND s.start_at >= Convert(datetime, @StartAt, 120)
+                        AND s.end_at <= Convert(datetime, @EndAt, 120)
+
+            ";
+
+            var parameters = new { startAt, endAt, profileId = (int)profile };
+            var scheduleDictionary = new Dictionary<int, ScheduleResponse>();
+            var result = await conn.QueryAsync<ScheduleResponse, User, Profile, ScheduleResponse>(query,
+                (schedule, user, profile) =>
+                {
+                    if (schedule != null)
+                    {
+                        if (scheduleDictionary.TryGetValue(schedule.UserId, out var scheduleResponse) == false)
+                        {
+                            scheduleResponse = schedule;
+                            scheduleDictionary.Add(scheduleResponse.UserId, scheduleResponse);
+                        }
+
+                        if (user != null)
+                        {
+                            scheduleResponse.Name = user.Name;
+                            scheduleResponse.UserId = user.UserId;
+                        }
+                        if (profile != null)
+                        {
+                            scheduleResponse.Profile = profile.Description;
+                        }
+
+                        return scheduleResponse;
+                    }
+                    return new ScheduleResponse();
+                }, parameters, splitOn: "user_id, profile_id");
+
+            return result.ToList();
         }
     }
 }
