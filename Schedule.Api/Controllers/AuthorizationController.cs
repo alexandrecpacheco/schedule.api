@@ -35,14 +35,5 @@ namespace Schedule.Api.Controllers
 
             return await ResponseResult(userAuthenticatedResponse);
         }
-
-        [HttpGet("Test")]
-        [Attributes.Authorize(Role.Admin)]
-        [ProducesResponseType(StatusCodes.Status200OK)]
-        [ProducesResponseType(StatusCodes.Status404NotFound)]
-        public string Test()
-        {
-            return @"[{'Test': 'test', 'Second Test' : '2 test'}]";
-        }
     }
 }

@@ -8,7 +8,7 @@ namespace Schedule.Domain.Entities
         public string Description { get; set; }
         public DateTime StartAt { get; set; }
         public DateTime EndAt { get; set; }
+        public int UserProfileId { get; set; }
         public UserProfile UserProfile { get; set; }
-        public TaskSchedule TaskClass { get; set; }
     }
 }

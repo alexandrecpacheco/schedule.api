@@ -1,29 +1,32 @@
 ﻿using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
-using System;
-using System.Collections.Generic;
-using System.Linq;
+using Schedule.Domain.Dto.Request;
+using Schedule.Domain.Interfaces.Data.Service;
 using System.Threading.Tasks;
 
 namespace Schedule.Api.Controllers
 {
     [Route("api/[controller]")]
-    public class ScheduleController : Controller
+    public class ScheduleController : BaseController
     {
-        //[Attributes.Authorize(Role.Admin)]
-        //[HttpGet()]
-        //[ProducesResponseType(StatusCodes.Status200OK)]
-        //[ProducesResponseType(StatusCodes.Status400BadRequest)]
-        //[ProducesResponseType(StatusCodes.Status404NotFound)]
-        //public async Task<IActionResult> Get()
-        ////{
-        ////    if (request == null) return BadRequest();
+        private readonly IScheduleService _scheduleService;
+        public ScheduleController(IScheduleService scheduleService)
+        {
+            _scheduleService = scheduleService;
+        }
 
-        ////    var response = await _userService.Authentication(request);
-        ////    if (response == null) return await ResponseResult(false);
-        ////    var userAuthenticatedResponse = GenerateToken(response, _apiSettings);
+        [Attributes.Authorize(Role.Admin, Role.Interviewer, Role.Candidate)]
+        [HttpPost("create")]
+        [ProducesResponseType(StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status400BadRequest)]
+        [ProducesResponseType(StatusCodes.Status404NotFound)]
+        public async Task<IActionResult> Create(ScheduleRequest request)
+        {
+            if (request == null) return BadRequest();
 
-        //    return await ResponseResult(userAuthenticatedResponse);
-        //}
+            await _scheduleService.Create(request);
+
+            return await ResponseResult(true);
+        }
     }
 }

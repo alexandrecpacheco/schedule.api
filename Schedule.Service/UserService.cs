@@ -60,7 +60,7 @@ namespace Schedule.Api.Service
                     Name = userRequest.Name.Trim(),
                     Email = userRequest.Email.Trim(),
                     Password = Cryptography.SHA256(userRequest.Password.Trim()),
-                    IsActive = true
+                    IsActive = userRequest.IsActive
                 };
 
                 Log.Information("Insert a new user");
