@@ -78,7 +78,7 @@ namespace Schedule.Infrastructure.Data
             return result.FirstOrDefault();
         }
 
-        public async Task<IEnumerable<ScheduleResponse>> GetSchedulesAsync(DateTime startAt, DateTime endAt, ProfileEnum profile)
+        public async Task<IList<ScheduleResponse>> GetSchedulesAsync(DateTime startAt, DateTime endAt, ProfileEnum profile)
         {
             await using var conn = await _database.CreateAndOpenConnection();
 
@@ -97,10 +97,10 @@ namespace Schedule.Infrastructure.Data
             ";
 
             var parameters = new { startAt, endAt, profileId = (int)profile };
-            var scheduleDictionary = new Dictionary<int, ScheduleResponse>();
             var result = await conn.QueryAsync<ScheduleResponse, User, Profile, ScheduleResponse>(query,
                 (schedule, user, profile) =>
                 {
+                    var scheduleDictionary = new Dictionary<int, ScheduleResponse>();
                     if (schedule != null)
                     {
                         if (scheduleDictionary.TryGetValue(schedule.UserId, out var scheduleResponse) == false)

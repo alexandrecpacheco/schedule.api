@@ -79,7 +79,7 @@ namespace Schedule.Service
             return await _scheduleRepository.GetScheduleAsync(request.StartAt, request.EndAt, userProfile.UserProfileId);
         }
 
-        public async Task<IEnumerable<ScheduleResponse>> GetSchedulesAsync(string name, string profile, DateTime startAt, DateTime endAt)
+        public async Task<IList<ScheduleResponse>> GetSchedulesAsync(string name, string profile, DateTime startAt, DateTime endAt)
         {
             var userProfile = await _userProfileRepository.GetUserProfile(name, string.Empty);
             if (userProfile == null)
@@ -87,16 +87,37 @@ namespace Schedule.Service
                 Log.Warning($"The UserProfile {name} does not exists");
                 throw new ArgumentNullException("The informed name does not exists, please inform a valid name");
             }
-            
+
             if (Enum.TryParse(profile, out ProfileEnum profileResult))
             {
+                IList<ScheduleResponse> scheduleResults = new List<ScheduleResponse>();
                 if (profileResult == ProfileEnum.Candidate)
-                    return await _scheduleRepository.GetSchedulesAsync(startAt, endAt, ProfileEnum.Interviewer);
+                    scheduleResults = await _scheduleRepository.GetSchedulesAsync(startAt, endAt, ProfileEnum.Interviewer);
                 else
-                    return await _scheduleRepository.GetSchedulesAsync(startAt, endAt, ProfileEnum.Candidate);
+                    scheduleResults = await _scheduleRepository.GetSchedulesAsync(startAt, endAt, ProfileEnum.Candidate);
+
+                SlotTime(scheduleResults);
+
+                return scheduleResults;
             }
 
             return new List<ScheduleResponse>();
+        }
+
+        private void SlotTime(IList<ScheduleResponse> responses)
+        {
+            foreach (var item in responses)
+            {
+                item.SlotTime.Add(item.StartAt);
+                DateTime startTime = item.StartAt;
+                DateTime endTime = item.EndAt;
+                while (startTime != endTime)
+                {
+                    double minuts = +60;
+                    startTime = startTime.AddMinutes(minuts);
+                    item.SlotTime.Add(startTime);
+                }
+            }
         }
     }
 }

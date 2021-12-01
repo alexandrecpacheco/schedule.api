@@ -11,6 +11,6 @@ namespace Schedule.Domain.Interfaces.Data.Repository
     {
         Task<Entities.Schedule> GetScheduleAsync(DateTime startAt, DateTime endAt, int userProfileId);
         Task<int> Create(Entities.Schedule schedule, DbConnection dbConnection, DbTransaction dbTransaction);
-        Task<IEnumerable<ScheduleResponse>> GetSchedulesAsync(DateTime startAt, DateTime endAt, ProfileEnum profile);
+        Task<IList<ScheduleResponse>> GetSchedulesAsync(DateTime startAt, DateTime endAt, ProfileEnum profile);
     }
 }
