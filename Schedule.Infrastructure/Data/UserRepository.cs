@@ -61,7 +61,7 @@ namespace Schedule.Infrastructure.Data
         {
             await using var conn = await _database.CreateAndOpenConnection();
             const string query = @"
-                    SELECT u.user_id, u.email
+                    SELECT u.user_id, u.name, u.email
                     FROM [user] u
                     WHERE u.email = @Email
             ";

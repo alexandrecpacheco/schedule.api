@@ -10,6 +10,7 @@ using Schedule.Domain.Interfaces.Data.Repository;
 using Schedule.Domain.Interfaces.Data.Service;
 using Schedule.Infrastructure;
 using Schedule.Infrastructure.Data;
+using Schedule.Service;
 using Serilog;
 using System.Text.Json;
 using System.Text.Json.Serialization;
@@ -45,8 +46,11 @@ namespace Schedule.Api
             services.AddSingleton<IDatabase, Database>();
 
             services.AddScoped<IUserService, UserService>();
+            services.AddScoped<IScheduleService, ScheduleService>();
+
             services.AddScoped<IUserRepository, UserRepository>();
             services.AddScoped<IUserProfileRepository, UserProfileRepository>();
+            services.AddScoped<IScheduleRepository, ScheduleRepository>();
 
             var apiSettings = new ApiSettings();
             Configuration.Bind("Schedule", apiSettings);

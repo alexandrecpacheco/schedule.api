@@ -33,20 +33,10 @@ CREATE TABLE [profile]
 )
 GO
 
-CREATE TABLE task_schedule (
-    task_id int IDENTITY(1,1),
-    [description] VARCHAR(100),
-    created_at        datetime         DEFAULT GETDATE() NOT NULL,
-    updated_at        datetime         DEFAULT null      NULL,
-    CONSTRAINT ["pk_task_schedule"] PRIMARY KEY NONCLUSTERED (task_id)
-    )
-GO
-
 CREATE TABLE schedule
 (
     schedule_id  int IDENTITY (1,1),
     user_profile_id int NOT NULL,
-    task_id int NOT NULL,
     [description] varchar(100)               NOT NULL,
     start_at datetime NOT NULL,
     end_at datetime NOT NULL,
@@ -64,11 +54,6 @@ GO
 ALTER TABLE user_profile
     ADD CONSTRAINT ["fk_user_profile_user"]
         FOREIGN KEY (user_id) REFERENCES [user] (user_id)
-GO
-
-ALTER TABLE schedule
-    ADD CONSTRAINT ["fk_schedule_task_schedule"]
-        FOREIGN KEY (task_id) REFERENCES task_schedule (task_id)
 GO
 
 ALTER TABLE schedule
