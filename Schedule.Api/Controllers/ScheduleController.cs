@@ -32,11 +32,6 @@ namespace Schedule.Api.Controllers
             return await ResponseResult(true);
         }
 
-        public string Name { get; set; }
-        public string Profile { get; set; }
-        public DateTime StartAt { get; set; }
-        public DateTime EndAt { get; set; }
-
         [Attributes.Authorize(Role.Admin, Role.Interviewer, Role.Candidate)]
         [HttpGet("search-schedule/{name}/{profile}/{startAt}/{endAt}")]
         [ProducesResponseType(StatusCodes.Status200OK)]
