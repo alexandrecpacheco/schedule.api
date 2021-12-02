@@ -33,4 +33,18 @@
             return CurrentEnvironment == "Development";
         }
     }
+
+    public interface IApiSettings
+    {
+        public IValues Value { get; set; }
+    }
+
+    public interface IValues
+    {
+        public string SecurityKey { get; set; }
+        public string Issuer { get; set; }
+        public string Audience { get; set; }
+        public int ExpirationTime { get; set; }
+    }
+
 }

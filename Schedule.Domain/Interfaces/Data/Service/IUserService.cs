@@ -8,5 +8,6 @@ namespace Schedule.Domain.Interfaces.Data.Service
     {
         Task<User> Authentication(SignInRequest signInRequest);
         Task Create(UserRequest userRequest);
+        Task<User> GetByEmail(string email);
     }
 }

@@ -78,7 +78,7 @@ namespace Schedule.Infrastructure.Data
             return result.FirstOrDefault();
         }
 
-        public async Task<IList<ScheduleResponse>> GetSchedulesAsync(DateTime startAt, DateTime endAt, ProfileEnum profile)
+        public async Task<IList<ScheduleResponse>> GetScheduleListAsync(DateTime startAt, DateTime endAt, ProfileEnum profile)
         {
             await using var conn = await _database.CreateAndOpenConnection();
 

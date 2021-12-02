@@ -79,7 +79,7 @@ namespace Schedule.Service
             return await _scheduleRepository.GetScheduleAsync(request.StartAt, request.EndAt, userProfile.UserProfileId);
         }
 
-        public async Task<IList<ScheduleResponse>> GetSchedulesAsync(string name, string profile, DateTime startAt, DateTime endAt)
+        public async Task<IList<ScheduleResponse>> GetScheduleListAsync(string name, string profile, DateTime startAt, DateTime endAt)
         {
             var userProfile = await _userProfileRepository.GetUserProfile(name, string.Empty);
             if (userProfile == null)
@@ -92,9 +92,9 @@ namespace Schedule.Service
             {
                 IList<ScheduleResponse> scheduleResults = new List<ScheduleResponse>();
                 if (profileResult == ProfileEnum.Candidate)
-                    scheduleResults = await _scheduleRepository.GetSchedulesAsync(startAt, endAt, ProfileEnum.Interviewer);
+                    scheduleResults = await _scheduleRepository.GetScheduleListAsync(startAt, endAt, ProfileEnum.Interviewer);
                 else
-                    scheduleResults = await _scheduleRepository.GetSchedulesAsync(startAt, endAt, ProfileEnum.Candidate);
+                    scheduleResults = await _scheduleRepository.GetScheduleListAsync(startAt, endAt, ProfileEnum.Candidate);
 
                 SlotTime(scheduleResults);
 

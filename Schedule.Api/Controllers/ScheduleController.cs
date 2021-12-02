@@ -45,7 +45,7 @@ namespace Schedule.Api.Controllers
         {
             if (!ModelState.IsValid) return BadRequest();
 
-            var search = await _scheduleService.GetSchedulesAsync(name, profile, startAt, endAt);
+            var search = await _scheduleService.GetScheduleListAsync(name, profile, startAt, endAt);
 
             return await ResponseResult(search);
         }

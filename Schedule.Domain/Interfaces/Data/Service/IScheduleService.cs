@@ -9,6 +9,6 @@ namespace Schedule.Domain.Interfaces.Data.Service
     public interface IScheduleService
     {
         Task Create(ScheduleRequest schedule);
-        Task<IList<ScheduleResponse>> GetSchedulesAsync(string name, string profile, DateTime startAt, DateTime endAt);
+        Task<IList<ScheduleResponse>> GetScheduleListAsync(string name, string profile, DateTime startAt, DateTime endAt);
     }
 }
