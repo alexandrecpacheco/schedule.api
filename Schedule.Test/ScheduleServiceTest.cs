@@ -73,6 +73,14 @@ namespace Schedule.Test
         [TestMethod]
         public async Task ScheduleService_GetScheduleListAsync_ReturnsAListOfScheduleCandidate()
         {
+            var searchRequest = new SearchScheduleRequest()
+            {
+                Name = "Test",
+                Profile = "Interviewer",
+                StartAt = DateTime.Now,
+                EndAt = DateTime.Now
+            };
+
             var userProfile = new UserProfile()
             {
                 UserProfileId = 1,
@@ -106,7 +114,7 @@ namespace Schedule.Test
             };
 
             var scheduleService = new ScheduleService(_mockIDatabase.Object, _mockUserProfileRepository.Object, _mockScheduleRepository.Object);
-            var expected = await scheduleService.GetScheduleListAsync("Test", "Candidate", DateTime.Now, DateTime.Now);
+            var expected = await scheduleService.GetScheduleListAsync(searchRequest);
 
             Assert.IsNotNull(expected);
         }
@@ -114,6 +122,14 @@ namespace Schedule.Test
         [TestMethod]
         public async Task ScheduleService_GetScheduleListAsync_ReturnsAListOfScheduleInterviewer()
         {
+            var searchRequest = new SearchScheduleRequest()
+            {
+                Name = "Test",
+                Profile = "Interviewer",
+                StartAt = DateTime.Now,
+                EndAt = DateTime.Now
+            };
+
             var userProfile = new UserProfile()
             {
                 UserProfileId = 1,
@@ -147,7 +163,7 @@ namespace Schedule.Test
             };
 
             var scheduleService = new ScheduleService(_mockIDatabase.Object, _mockUserProfileRepository.Object, _mockScheduleRepository.Object);
-            var expected = await scheduleService.GetScheduleListAsync("Test", "Interviewer", DateTime.Now, DateTime.Now);
+            var expected = await scheduleService.GetScheduleListAsync(searchRequest);
 
             Assert.IsNotNull(expected);
         }

@@ -8,8 +8,7 @@ using Schedule.Domain;
 using Schedule.Domain.Interfaces.Data;
 using Schedule.Domain.Interfaces.Data.Repository;
 using Schedule.Domain.Interfaces.Data.Service;
-using Schedule.Infrastructure;
-using Schedule.Infrastructure.Data;
+using Schedule.IoC;
 using Schedule.Service;
 using Serilog;
 using System.Text.Json;
@@ -43,14 +42,7 @@ namespace Schedule.Api
             });
             services.AddRazorPages();
 
-            services.AddSingleton<IDatabase, Database>();
-
-            services.AddScoped<IUserService, UserService>();
-            services.AddScoped<IScheduleService, ScheduleService>();
-
-            services.AddScoped<IUserRepository, UserRepository>();
-            services.AddScoped<IUserProfileRepository, UserProfileRepository>();
-            services.AddScoped<IScheduleRepository, ScheduleRepository>();
+            services.RegisterDependencyInjection();
 
             var apiSettings = new ApiSettings();
             Configuration.Bind("Schedule", apiSettings);

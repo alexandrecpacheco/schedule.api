@@ -13,3 +13,5 @@
 /Schedule.Test/obj
 /Schedule.Infrastructure/bin/Debug/netcoreapp3.1
 /Schedule.Test/bin/Debug/netcoreapp3.1
+/Schedule.IoC/bin/Debug/netcoreapp3.1
+/Schedule.IoC/obj

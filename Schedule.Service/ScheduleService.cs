@@ -79,22 +79,22 @@ namespace Schedule.Service
             return await _scheduleRepository.GetScheduleAsync(request.StartAt, request.EndAt, userProfile.UserProfileId);
         }
 
-        public async Task<IList<ScheduleResponse>> GetScheduleListAsync(string name, string profile, DateTime startAt, DateTime endAt)
+        public async Task<IList<ScheduleResponse>> GetScheduleListAsync(SearchScheduleRequest request)
         {
-            var userProfile = await _userProfileRepository.GetUserProfile(name, string.Empty);
+            var userProfile = await _userProfileRepository.GetUserProfile(request.Name, string.Empty);
             if (userProfile == null)
             {
-                Log.Warning($"The UserProfile {name} does not exists");
-                throw new ArgumentNullException("The informed name does not exists, please inform a valid name");
+                Log.Warning($"The UserProfile {request.Name} does not exists");
+                throw new ArgumentNullException($"The informed name {request.Name} does not exists, please inform a valid name");
             }
 
-            if (Enum.TryParse(profile, out ProfileEnum profileResult))
+            if (Enum.TryParse(request.Profile, out ProfileEnum profileResult))
             {
                 IList<ScheduleResponse> scheduleResults = new List<ScheduleResponse>();
                 if (profileResult == ProfileEnum.Candidate)
-                    scheduleResults = await _scheduleRepository.GetScheduleListAsync(startAt, endAt, ProfileEnum.Interviewer);
+                    scheduleResults = await _scheduleRepository.GetScheduleListAsync(request.StartAt, request.EndAt, ProfileEnum.Interviewer);
                 else
-                    scheduleResults = await _scheduleRepository.GetScheduleListAsync(startAt, endAt, ProfileEnum.Candidate);
+                    scheduleResults = await _scheduleRepository.GetScheduleListAsync(request.StartAt, request.EndAt, ProfileEnum.Candidate);
 
                 SlotTime(scheduleResults);
 

@@ -32,14 +32,13 @@ namespace Schedule.Api.Controllers
         }
 
         [Attributes.Authorize(Role.Admin, Role.Interviewer, Role.Candidate)]
-        [HttpGet("search-schedule/{name}/{profile}/{startAt}/{endAt}")]
+        [HttpGet("search-schedule")]
         [ProducesResponseType(StatusCodes.Status200OK)]
-        public async Task<IActionResult> GetSchedule([BindRequired] string name, [BindRequired] string profile, 
-            [BindRequired] DateTime startAt, [BindRequired] DateTime endAt)
+        public async Task<IActionResult> GetSchedule([BindRequired] [FromQuery] SearchScheduleRequest request)
         {
             if (!ModelState.IsValid) return BadRequest();
 
-            var search = await _scheduleService.GetScheduleListAsync(name, profile, startAt, endAt);
+            var search = await _scheduleService.GetScheduleListAsync(request);
 
             return await ResponseResult(search);
         }

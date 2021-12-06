@@ -16,6 +16,7 @@
 
   <ItemGroup>
     <ProjectReference Include="..\Schedule.Domain\Schedule.Domain.csproj" />
+    <ProjectReference Include="..\Schedule.IoC\Schedule.IoC.csproj" />
     <ProjectReference Include="..\Schedule.Service\Schedule.Service.csproj" />
   </ItemGroup>
 
