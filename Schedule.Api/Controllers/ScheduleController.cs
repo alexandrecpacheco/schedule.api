@@ -4,7 +4,6 @@ using Microsoft.AspNetCore.Mvc.ModelBinding;
 using Schedule.Domain.Dto.Request;
 using Schedule.Domain.Interfaces.Data.Service;
 using System;
-using System.ComponentModel.DataAnnotations;
 using System.Threading.Tasks;
 
 namespace Schedule.Api.Controllers
