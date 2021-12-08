@@ -8,5 +8,5 @@
     user: "admin@gmail.com" 
     password: "admin123@`
 
-The API will be create the database name 'schedule' where you appointed on Connection String;
+The API will be create automatically the database name 'schedule' where you appointed on Connection String;
 
